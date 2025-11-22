@@ -24,10 +24,10 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          IMAGE_TAG=immovably/docker-instaloader:$(date +%Y%m%d%H%M%S)
+          IMAGE_TAG=immovably/docker-instaloader:latest
           docker build . --file Dockerfile --tag $IMAGE_TAG
 
       - name: Push the Docker image
         run: |
-          IMAGE_TAG=immovably/docker-instaloader:$(date +%Y%m%d%H%M%S)
+          IMAGE_TAG=immovably/docker-instaloader:latest
           docker push $IMAGE_TAG
