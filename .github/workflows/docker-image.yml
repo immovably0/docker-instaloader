@@ -24,10 +24,10 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          IMAGE_TAG=quentinj54/docker-instaloader:latest
+          IMAGE_TAG=immovably0/docker-instaloader:latest
           docker build . --file Dockerfile --tag $IMAGE_TAG
 
       - name: Push the Docker image
         run: |
-          IMAGE_TAG=quentinj54/docker-instaloader:latest
+          IMAGE_TAG=immovably0/docker-instaloader:latest
           docker push $IMAGE_TAG
