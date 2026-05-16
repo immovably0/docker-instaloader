@@ -1,7 +1,7 @@
 FROM python:3.14-slim
 
 RUN pip install --upgrade pip
-RUN pip3 install instaloader==4.15
+RUN pip3 install instaloader==4.15.1
 
 RUN mkdir /download
 
