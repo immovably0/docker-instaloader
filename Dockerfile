@@ -1,7 +1,7 @@
 FROM python:alpine
 
 RUN pip install --upgrade pip
-RUN pip install browser-cookie3 instaloader==4.15.1
+RUN pip install instaloader==4.15.1
 
 RUN mkdir /download
 
