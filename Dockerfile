@@ -1,12 +1,10 @@
-FROM python:3.12-alpine
+FROM python:alpine
 
 # Dépendances système
 RUN apk add --no-cache \
     bash \
     chromium \
-    chromium-chromedriver \
-    sqlite \
-    libstdc++
+    chromium-chromedriver
 
 # Python
 RUN pip install --upgrade pip
