@@ -1,4 +1,4 @@
-FROM python:3.14-slim
+FROM python:alpine
 
 RUN pip install --upgrade pip
 RUN pip install instaloader==4.15.1
