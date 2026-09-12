@@ -5,7 +5,7 @@ RUN pip install --upgrade pip
 
 # Instaloader
 RUN pip install \
-    instaloader==4.15.1 
+    instaloader==4.15.3 
     
 # Dossier de travail
 RUN mkdir /download
