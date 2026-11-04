@@ -5,10 +5,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  # Rebuild hebdomadaire (lundi 05:00 UTC) pour récupérer les nouvelles versions
-  # d'Instaloader, de Python/Alpine et de pip sans intervention manuelle
-  schedule:
-    - cron: "0 5 * * 1"
   workflow_dispatch:
 
 jobs:
