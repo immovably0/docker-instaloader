@@ -1,49 +1,49 @@
 # docker-instaloader
 
-Docker image with `instaloader` in it. See [instaloader/instaloader](https://github.com/instaloader/instaloader) for more info.
+Image Docker contenant `instaloader`. Voir [instaloader/instaloader](https://github.com/instaloader/instaloader) pour plus d'informations.
 
-Some of this was inspired by [shyd/docker-instagram-scraper](https://github.com/shyd/docker-instagram-scraper), another good option for Instagram archiving.
+Ce projet s'inspire en partie de [shyd/docker-instagram-scraper](https://github.com/shyd/docker-instagram-scraper), une autre bonne option pour archiver Instagram.
 
-## Instaloader versions
+## Versions d'Instaloader
 
-I do my best to keep this updated whenever there is a release of Instaloader. Going forward, I plan to create a new tag for each [Instaloader release version](https://github.com/instaloader/instaloader/releases).
+Je fais de mon mieux pour garder l'image à jour à chaque nouvelle version d'Instaloader. Un tag est créé pour chaque [version d'Instaloader](https://github.com/instaloader/instaloader/releases).
 
-This fork is rebuilt every Monday (and on every push to `master`), always from the latest base image and the latest Instaloader release.
+Ce fork est reconstruit tous les lundis (et à chaque push sur `master`), toujours à partir de la dernière image de base et de la dernière version d'Instaloader.
 
-`immovably/docker-instaloader:latest` -- latest official release version
+`immovably/docker-instaloader:latest` : dernière version officielle
 
-`immovably/docker-instaloader:a.b.c` -- version a.b.c. For example, alpha v4.3a1 can be pulled via:
+`immovably/docker-instaloader:a.b.c` : version a.b.c. Par exemple, la version alpha 4.3a1 s'obtient avec :
 `docker pull immovably/docker-instaloader:4.3a1`
 
-[Full list of available tags](https://hub.docker.com/r/immovably/docker-instaloader/tags)
+[Liste complète des tags disponibles](https://hub.docker.com/r/immovably/docker-instaloader/tags)
 
-Pull requests build and test the image but never publish it.
+Les pull requests construisent et testent l'image, mais ne la publient jamais.
 
-## Usage
+## Utilisation
 
-For full Instaloader usage, refer to [their great documentation here](https://instaloader.github.io/index.html).
+Pour l'utilisation complète d'Instaloader, consulte [leur excellente documentation](https://instaloader.github.io/index.html).
 
-One of the goals of this docker image is to allow you to pass a list of args and targets to Instaloader.
+L'un des objectifs de cette image est de te permettre de transmettre à Instaloader une liste d'arguments et une liste de cibles.
 
-Create a file with a list of arguments to be passed on to Instaloader -- this can be named anything you want locally, but should be passed to the container as `il_args.txt`. At a minimum, I recommend using the `--login=my_username` and `--sessionfile` arguments. For example, my file currently contains the following:
+Crée un fichier contenant la liste des arguments à passer à Instaloader. Tu peux le nommer comme tu veux en local, mais il doit être monté dans le conteneur sous le nom `il_args.txt`. Je recommande au minimum les arguments `--login=mon_identifiant` et `--sessionfile`. Par exemple, mon fichier contient actuellement :
 
 ```
---login=my_username 
---sessionfile=instaloader.sessionfile 
+--login=mon_identifiant
+--sessionfile=instaloader.sessionfile
 --geotags
 --fast-update
 ```
 
-Create a file with a list of targets to be downloaded -- again, this can be named anything you want locally, but should be passed to the container as `il_targets.txt`. Per [Instaloader's documentation](https://instaloader.github.io/cli-options.html#what-to-download): a "target is a profile, a "#hashtag", @profile (all profiles that profile is following), or if logged in :feed (pictures from your feed), :stories (stories of your followees) or :saved (collection of posts marked as saved)". The targets should be separated by newlines or spaces.
+Crée un fichier contenant la liste des cibles à télécharger. Là encore, le nom local est libre, mais il doit être monté sous le nom `il_targets.txt`. D'après la [documentation d'Instaloader](https://instaloader.github.io/cli-options.html#what-to-download), une cible est un profil, un « #hashtag », @profil (tous les profils suivis par ce profil) ou, une fois connecté, `:feed` (les images de ton fil), `:stories` (les stories des comptes que tu suis) ou `:saved` (les publications enregistrées). Les cibles se séparent par des retours à la ligne ou des espaces.
 
 ```
-user_1
-user_2
+utilisateur_1
+utilisateur_2
 #hashtag_1
 [etc]
 ```
 
-Then you can run a new container, passing those files to it:
+Tu peux ensuite lancer un nouveau conteneur en lui transmettant ces fichiers :
 
 ```
 docker run --name instaloader -it \
@@ -53,16 +53,16 @@ docker run --name instaloader -it \
     immovably/docker-instaloader
 ```
 
-On Windows PowerShell, replace `\` line endings with a backtick and `$(pwd)/` with `${PWD}/`.
+Sous Windows PowerShell, remplace les `\` de fin de ligne par un accent grave (backtick) et `$(pwd)/` par `${PWD}/`.
 
-By default, media will be downloaded to `./download/[target]`. The folder/file structure can be modified via Instaloader arguments using `--dirname-pattern` or `--filename-pattern`.
+Par défaut, les médias sont téléchargés dans `./download/[cible]`. L'organisation des dossiers et des fichiers peut être modifiée avec les arguments d'Instaloader `--dirname-pattern` et `--filename-pattern`.
 
-The container runs as root by default, so files written to `./download` belong to root on the host. To write them as your own user, add `--user "$(id -u):$(id -g)"` to the command; the session file path then has to be writable by that user.
+Le conteneur s'exécute par défaut en root : les fichiers écrits dans `./download` appartiennent donc à root sur la machine hôte. Pour les écrire avec ton propre utilisateur, ajoute `--user "$(id -u):$(id -g)"` à la commande ; le chemin du fichier de session doit alors être accessible en écriture pour cet utilisateur.
 
-Never commit your session file (`*.sessionfile`): it grants access to your Instagram account.
+Ne publie jamais ton fichier de session (`*.sessionfile`) : il donne accès à ton compte Instagram.
 
-## Disclaimer
+## Avertissement
 
-This docker image is in no way affiliated with, authorized, maintained or endorsed by Instaloader or by Instagram or any of its affiliates or subsidiaries. This is an independent and unofficial project. Use at your own risk.
+Cette image Docker n'est ni affiliée, ni autorisée, ni maintenue, ni approuvée par Instaloader, Instagram ou l'une de leurs filiales. Il s'agit d'un projet indépendant et non officiel. Utilisation à tes risques.
 
-There's a decent chance it doesn't enable you to use all Instaloader functionality, though I've done my best.
+Il est possible que l'image ne permette pas d'utiliser toutes les fonctionnalités d'Instaloader, même si j'ai fait de mon mieux.
