@@ -4,4 +4,5 @@ args="$(cat "$1" | xargs)"
 
 targets="$(cat "$2" | xargs)"
 
-instaloader $args $targets
+# exec : Instaloader reçoit directement les signaux (docker stop) au lieu du shell
+exec instaloader $args $targets

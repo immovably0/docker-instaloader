@@ -1,3 +1,6 @@
+.git
+.github
 download
 il_args.txt
 il_targets.txt
+*.sessionfile

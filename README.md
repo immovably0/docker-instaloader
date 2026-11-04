@@ -8,12 +8,16 @@ Some of this was inspired by [shyd/docker-instagram-scraper](https://github.com/
 
 I do my best to keep this updated whenever there is a release of Instaloader. Going forward, I plan to create a new tag for each [Instaloader release version](https://github.com/instaloader/instaloader/releases).
 
-`didc/docker-instaloader:latest` -- latest official release version
+This fork is rebuilt every Monday (and on every push to `master`), always from the latest base image and the latest Instaloader release.
 
-`didc/docker-instaloader:a.b.c` -- version a.b.c. For example, alpha v4.3a1 can be pulled via:
-`docker pull didc/docker-instaloader:4.3a1`
+`immovably/docker-instaloader:latest` -- latest official release version
 
-[Full list of available tags](https://hub.docker.com/r/didc/docker-instaloader/tags)
+`immovably/docker-instaloader:a.b.c` -- version a.b.c. For example, alpha v4.3a1 can be pulled via:
+`docker pull immovably/docker-instaloader:4.3a1`
+
+[Full list of available tags](https://hub.docker.com/r/immovably/docker-instaloader/tags)
+
+Pull requests build and test the image but never publish it.
 
 ## Usage
 
@@ -43,13 +47,19 @@ Then you can run a new container, passing those files to it:
 
 ```
 docker run --name instaloader -it \
-    -v $(pwd)\download:/download 
-    -v $(pwd)\il_args.txt:/il_args.txt 
-    -v $(pwd)\il_targets.txt:/il_targets.txt 
-    didc/docker-instaloader
+    -v "$(pwd)/download:/download" \
+    -v "$(pwd)/il_args.txt:/il_args.txt" \
+    -v "$(pwd)/il_targets.txt:/il_targets.txt" \
+    immovably/docker-instaloader
 ```
 
+On Windows PowerShell, replace `\` line endings with a backtick and `$(pwd)/` with `${PWD}/`.
+
 By default, media will be downloaded to `./download/[target]`. The folder/file structure can be modified via Instaloader arguments using `--dirname-pattern` or `--filename-pattern`.
+
+The container runs as root by default, so files written to `./download` belong to root on the host. To write them as your own user, add `--user "$(id -u):$(id -g)"` to the command; the session file path then has to be writable by that user.
+
+Never commit your session file (`*.sessionfile`): it grants access to your Instagram account.
 
 ## Disclaimer
 
