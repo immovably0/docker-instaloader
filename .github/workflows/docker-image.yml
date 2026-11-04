@@ -5,6 +5,11 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  # Rebuild hebdomadaire (lundi 05:00 UTC) pour récupérer les nouvelles versions
+  # d'Instaloader, de Python/Alpine et de pip sans intervention manuelle
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,20 +19,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build the Docker image
+      - name: Build the Docker image (base image and dependencies always refreshed)
         run: |
-          IMAGE_TAG=immovably/docker-instaloader:latest
-          docker build . --file Dockerfile --tag $IMAGE_TAG
+          docker build . --file Dockerfile --pull --no-cache \
+            --tag immovably/docker-instaloader:latest
+
+      - name: Tag with the installed Instaloader version
+        run: |
+          VERSION=$(docker run --rm --entrypoint instaloader \
+            immovably/docker-instaloader:latest --version | head -n1)
+          echo "Instaloader version: $VERSION"
+          docker tag immovably/docker-instaloader:latest \
+            immovably/docker-instaloader:$VERSION
 
       - name: Push the Docker image
         run: |
-          IMAGE_TAG=immovably/docker-instaloader:latest
-          docker push $IMAGE_TAG
+          docker push --all-tags immovably/docker-instaloader

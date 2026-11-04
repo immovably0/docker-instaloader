@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Image de base du Dockerfile (python:alpine)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  # Actions utilisées dans les workflows GitHub
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

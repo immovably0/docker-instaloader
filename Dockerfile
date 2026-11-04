@@ -1,12 +1,13 @@
 FROM python:alpine
 
-# Python
-RUN pip install --upgrade pip
+# Paquets système à jour (correctifs de sécurité Alpine)
+RUN apk upgrade --no-cache
 
-# Instaloader
-RUN pip install \
-    instaloader==4.15.3 
-    
+# pip et Instaloader : dernière version disponible au moment du build
+# (le build doit se faire avec --pull --no-cache pour ne pas réutiliser une couche en cache)
+RUN pip install --no-cache-dir --upgrade pip instaloader
+
+
 # Dossier de travail
 RUN mkdir /download
 WORKDIR /download
