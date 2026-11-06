@@ -92,6 +92,41 @@ Un intervalle très court multiplie les requêtes vers Instagram, ce qui peut en
 
 Ne publie jamais ton fichier de session (`*.sessionfile`) : il donne accès à ton compte Instagram.
 
+## Utiliser les cookies d'un navigateur (Firefox)
+
+Au lieu de `--login`, Instaloader peut importer la session d'un navigateur dans lequel tu es déjà connecté à Instagram (pratique quand la connexion par mot de passe ou la double authentification pose problème). Dans un conteneur, il n'y a ni navigateur ni profil : il faut donc lui fournir le fichier de cookies de ton navigateur.
+
+| Variable | Rôle |
+| --- | --- |
+| `IL_LOAD_COOKIES` | Nom du navigateur : `firefox`, `chrome`, `chromium`, `brave`, `edge`, `librewolf`, `opera`, `opera_gx`, `vivaldi` ou `safari`. Équivaut à `--load-cookies`. |
+| `IL_COOKIEFILE` | Chemin, dans le conteneur, du fichier de cookies du profil. Équivaut à `--cookiefile`. |
+
+1. Connecte-toi à instagram.com dans Firefox, puis **ferme complètement Firefox** : tant qu'il tourne, les derniers cookies ne sont pas tous écrits dans `cookies.sqlite`.
+2. Copie le fichier `cookies.sqlite` de ton profil dans un dossier `cookies/` à côté de tes autres fichiers :
+   - Windows : `%APPDATA%\Mozilla\Firefox\Profiles\<profil>\cookies.sqlite`
+   - macOS : `~/Library/Application Support/Firefox/Profiles/<profil>/cookies.sqlite`
+   - Linux : `~/.mozilla/firefox/<profil>/cookies.sqlite` (Firefox installé avec Snap : `~/snap/firefox/common/.mozilla/firefox/<profil>/cookies.sqlite`)
+3. Retire `--login` et `--sessionfile` de `il_args.txt` : Instaloader refuse de combiner `--login` et `--load-cookies`.
+4. Lance le conteneur avec les deux variables et le dossier monté :
+
+```
+docker run --name instaloader -it \
+    -e IL_LOAD_COOKIES=firefox \
+    -e IL_COOKIEFILE=/cookies/cookies.sqlite \
+    -v "$(pwd)/cookies:/cookies:ro" \
+    -v "$(pwd)/download:/download" \
+    -v "$(pwd)/il_args.txt:/il_args.txt" \
+    -v "$(pwd)/il_targets.txt:/il_targets.txt" \
+    immovably/docker-instaloader
+```
+
+Les variables s'utilisent aussi avec le mode cron. Comme c'est le dossier qui est monté, tu peux remplacer `cookies.sqlite` plus tard sur ta machine : la prochaine exécution utilisera le nouveau fichier.
+
+À savoir :
+- Privilégie Firefox. Les navigateurs basés sur Chromium (Chrome, Edge, Brave…) chiffrent leurs cookies avec une clé liée à ton système : sous Windows ou macOS, le conteneur Linux ne pourra a priori pas les lire.
+- Le fichier de cookies donne accès à ton compte Instagram, comme un fichier de session : ne le publie jamais et ne l'intègre pas à l'image (`cookies/` et `*.sqlite` sont ignorés par Git et par Docker).
+- La session peut expirer ou être invalidée (déconnexion depuis le navigateur, changement de mot de passe). Si Instaloader affiche « Not logged in », recopie un `cookies.sqlite` récent.
+
 ## Avertissement
 
 Cette image Docker n'est ni affiliée, ni autorisée, ni maintenue, ni approuvée par Instaloader, Instagram ou l'une de leurs filiales. Il s'agit d'un projet indépendant et non officiel. Utilisation à tes risques.

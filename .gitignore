@@ -1,0 +1,7 @@
+# Données locales et secrets : ne jamais publier
+download/
+il_args.txt
+il_targets.txt
+*.sessionfile
+cookies/
+*.sqlite

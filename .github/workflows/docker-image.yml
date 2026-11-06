@@ -45,6 +45,8 @@ jobs:
         run: |
           VERSION=$(docker run --rm --entrypoint instaloader "$IMAGE:latest" --version | head -n1)
           test -n "$VERSION"
+          # --load-cookies échoue sans browser_cookie3 : on vérifie qu'il est bien importable
+          docker run --rm --entrypoint python "$IMAGE:latest" -c "import browser_cookie3"
           echo "Instaloader version: $VERSION"
           echo "value=$VERSION" >> "$GITHUB_OUTPUT"
 
