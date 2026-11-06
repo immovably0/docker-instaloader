@@ -57,7 +57,38 @@ Sous Windows PowerShell, remplace les `\` de fin de ligne par un accent grave (b
 
 Par défaut, les médias sont téléchargés dans `./download/[cible]`. L'organisation des dossiers et des fichiers peut être modifiée avec les arguments d'Instaloader `--dirname-pattern` et `--filename-pattern`.
 
-Le conteneur s'exécute par défaut en root : les fichiers écrits dans `./download` appartiennent donc à root sur la machine hôte. Pour les écrire avec ton propre utilisateur, ajoute `--user "$(id -u):$(id -g)"` à la commande ; le chemin du fichier de session doit alors être accessible en écriture pour cet utilisateur.
+Le conteneur s'exécute par défaut en root : les fichiers écrits dans `./download` appartiennent donc à root sur la machine hôte. Pour les écrire avec ton propre utilisateur, ajoute `--user "$(id -u):$(id -g)"` à la commande ; le chemin du fichier de session doit alors être accessible en écriture pour cet utilisateur. Cette option est incompatible avec le mode cron ci-dessous, qui exige root.
+
+## Relance planifiée (cron)
+
+Par défaut, le conteneur lance Instaloader une fois puis s'arrête : il faut le redémarrer pour relancer l'appli. Pour éviter cela, définis la variable `CRON_SCHEDULE` : le conteneur reste alors actif et relance Instaloader selon ce planning.
+
+| Variable | Rôle |
+| --- | --- |
+| `CRON_SCHEDULE` | Planning cron à 5 champs (minute heure jour mois jour_semaine), par exemple `0 */6 * * *` pour toutes les 6 heures. Sans cette variable, comportement inchangé. |
+| `RUN_ON_START` | `true` pour lancer aussi une exécution dès le démarrage du conteneur (par défaut, la première exécution attend l'heure prévue). |
+| `TZ` | Fuseau horaire du planning, par exemple `Europe/Paris`. Par défaut, UTC. |
+
+```
+docker run -d --name instaloader --restart unless-stopped \
+    -e CRON_SCHEDULE="0 */6 * * *" \
+    -e RUN_ON_START=true \
+    -e TZ=Europe/Paris \
+    -v "$(pwd)/download:/download" \
+    -v "$(pwd)/il_args.txt:/il_args.txt" \
+    -v "$(pwd)/il_targets.txt:/il_targets.txt" \
+    immovably/docker-instaloader
+```
+
+Les messages d'Instaloader s'affichent avec `docker logs -f instaloader`. Si une exécution dure plus longtemps que l'intervalle prévu, la suivante est ignorée au lieu de se superposer.
+
+Pour déclencher une exécution à la main dans le conteneur déjà lancé, sans le redémarrer :
+
+```
+docker exec instaloader /run_job.sh
+```
+
+Un intervalle très court multiplie les requêtes vers Instagram, ce qui peut entraîner des limitations ou le blocage du compte : évite de descendre sous quelques heures.
 
 Ne publie jamais ton fichier de session (`*.sessionfile`) : il donne accès à ton compte Instagram.
 
