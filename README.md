@@ -17,6 +17,8 @@ Ce fork est reconstruit tous les lundis (et à chaque push sur `master`), toujou
 
 [Liste complète des tags disponibles](https://hub.docker.com/r/immovably/docker-instaloader/tags)
 
+Au démarrage, le conteneur affiche la version d'Instaloader installée dans l'image (première ligne de `docker logs`), par exemple `Instaloader 4.16`.
+
 Les pull requests construisent et testent l'image, mais ne la publient jamais.
 
 ## Utilisation

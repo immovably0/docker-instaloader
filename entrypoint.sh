@@ -11,6 +11,9 @@
 #   TZ             fuseau horaire du planning, ex. Europe/Paris (UTC par défaut)
 set -eu
 
+# Version d'Instaloader installée dans l'image (visible avec docker logs)
+echo "Instaloader $(instaloader --version | head -n 1)"
+
 if [ -z "${CRON_SCHEDULE:-}" ]; then
   exec /run_instaloader.sh /il_args.txt /il_targets.txt
 fi
